@@ -168,7 +168,7 @@ class DevBlog extends Plugin
         // handle given mode: call return function
         switch ($mode) {
         case 'meta':
-            return $this->getArticleHeader();
+            return $this->getArticleHeader($submode);
             break;
         case 'list':
             switch ($submode) {
@@ -194,6 +194,55 @@ class DevBlog extends Plugin
         return $this->noMode();
     }
 
+    /**
+     * returns output for article header meta data
+     *
+     * @param  string $tags line break separated meta tags
+     *
+     * @return string       html
+     */
+    function getArticleHeader($tags)
+    {
+        global $CatPage;
+
+        // get lines
+        $meta = array_slice(array_map("trim", explode("-html_br~", $tags)), 1, count($this->_metavalues));
+        $article = array_combine($this->_metavalues, $meta);
+
+        // initialize return content, begin plugin content
+        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content -->';
+
+        $date = $article['date'] . ' ' . $article['time'];
+        $urlcategory = $CatPage->get_Href(
+            $this->settings->get('cat'),
+            $this->settings->get('page'),
+            'c=' . $article['category']
+        );
+        $urlarticle = $CatPage->get_Href($this->settings->get('cat'), PAGE_REQUEST);
+        // remove line breaks from template
+        $template = str_replace('<br />', '', $this->settings->get('template_article_header'));;
+        // fill template markers with content
+        $template = str_replace(
+            $this->_marker,
+            array(
+                date_format(date_create($date), $this->settings->get('date_format_article')),
+                $date,
+                $article['author'],
+                '<a href="' . $urlcategory . '">' . $article['category'] . '</a>',
+                $article['title'],
+                $article['teaser'],
+                $this->settings->get('divider'),
+                $urlarticle,
+            ),
+            $template
+        );
+        $content .= $template;
+
+        // end plugin content
+        $content .= '<!-- END ' . self::PLUGIN_TITLE . ' plugin content -->';
+
+        return $content;
+    }
 
     /**
      * returns a list of article teasers
@@ -233,7 +282,7 @@ class DevBlog extends Plugin
         }
 
         // initialize return content, begin plugin content
-        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content --> ';
+        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content -->';
 
         foreach ($articles as $page => $article) {
             $date = $article['date'] . ' ' . $article['time'];
@@ -260,11 +309,11 @@ class DevBlog extends Plugin
                 ),
                 $template
             );
-            $content .= $template . '<br />';
+            $content .= $template;
         }
 
         // end plugin content
-        $content .= '<!-- END ' . self::PLUGIN_TITLE . ' plugin content --> ';
+        $content .= '<!-- END ' . self::PLUGIN_TITLE . ' plugin content -->';
 
         return $content;
     }
@@ -280,9 +329,9 @@ class DevBlog extends Plugin
     function listAttribute($attribute)
     {
         global $CatPage;
-        
+
         // initialize return content, begin plugin content
-        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content --> ';
+        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content -->';
         $content .= '<ul>';
 
         $list = array();
@@ -304,7 +353,7 @@ class DevBlog extends Plugin
         $content .= '</ul>';
 
         // end plugin content
-        $content .= '<!-- END ' . self::PLUGIN_TITLE . ' plugin content --> ';
+        $content .= '<!-- END ' . self::PLUGIN_TITLE . ' plugin content -->';
 
         return $content;
     }
@@ -347,6 +396,21 @@ class DevBlog extends Plugin
 
         return $articles;
     }
+
+
+
+    /**
+     * returns warning of wrong or no mode
+     *
+     * @return string html output
+     */
+    function noMode()
+    {
+        $content = 'Bitte einen gültigen Modus angeben.';
+        return $content;
+    }
+
+
     /**
      * sets backend configuration elements and template
      *
