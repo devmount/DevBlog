@@ -51,7 +51,10 @@ class DevBlog extends Plugin
         = 'http://devmount.de/Develop/moziloCMS/Plugins/DevBlog.html';
 
     private $_plugin_tags = array(
-        'tag1' => '{DevBlog|type|<param1>|<param2>}',
+        'tag1' => '{DevBlog|meta|<tags>}',
+        'tag2' => '{DevBlog|list|articles}',
+        'tag3' => '{DevBlog|list|categories}',
+        'tag4' => '{DevBlog|list|authors}',
     );
 
     const LOGO_URL = 'http://media.devmount.de/logo_pluginconf.png';
@@ -70,6 +73,13 @@ class DevBlog extends Plugin
      */
     private $_confdefault = array(
         'cat' => array(
+            'Blog',
+            'text',
+            '100',
+            '5',
+            "",
+        ),
+        'page' => array(
             'Blog',
             'text',
             '100',
@@ -153,7 +163,7 @@ class DevBlog extends Plugin
     function getContent($value)
     {
         // get params
-        list($mode, $submode, $p1, $p2) = array_map(trim, explode('|', $value));
+        list($mode, $submode) = array_map(trim, explode('|', $value));
 
         // handle given mode: call return function
         switch ($mode) {
@@ -163,10 +173,13 @@ class DevBlog extends Plugin
         case 'list':
             switch ($submode) {
             case 'articles':
-                return $this->listArticles($p1, $p2);
+                return $this->listArticles();
                 break;
             case 'categories':
-                return $this->listCategories();
+                return $this->listAttribute('category');
+                break;
+            case 'authors':
+                return $this->listAttribute('author');
                 break;
             default:
                 return $this->noMode();
@@ -185,20 +198,51 @@ class DevBlog extends Plugin
     /**
      * returns a list of article teasers
      *
-     * @param  integer $number   how many articles should be teasered
-     * @param  string  $category only show articles of given category
-     *
      * @return string            html
      */
-    function listArticles($number=0, $category='')
+    function listArticles()
     {
+        global $CatPage;
+
+        $number = getRequestValue('n');
+        $category = getRequestValue('c');
+        $author = getRequestValue('a');
+
+        // get all articles
+        $articles = $this->getArticles();
+
+        // check category request
+        if ($category) {
+            foreach ($articles as $key => $article) {
+                if ($article['category'] != $category) {
+                    unset($articles[$key]);
+                }
+            }
+        }
+        // check author request
+        if ($author) {
+            foreach ($articles as $key => $article) {
+                if ($article['author'] != $author) {
+                    unset($articles[$key]);
+                }
+            }
+        }
+        // check number request
+        if ($number and count($articles > $number)) {
+            $articles = array_slice($articles, 0, $number);
+        }
+
         // initialize return content, begin plugin content
         $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content --> ';
 
-        foreach ($this->getArticles() as $article) {
+        foreach ($articles as $page => $article) {
             $date = $article['date'] . ' ' . $article['time'];
-            $urlcatgeory = ''; // TODO
-            $urlarticle = ''; // TODO
+            $urlcategory = $CatPage->get_Href(
+                $this->settings->get('cat'),
+                $this->settings->get('page'),
+                'c=' . $article['category']
+            );
+            $urlarticle = $CatPage->get_Href($this->settings->get('cat'), $page);
             // remove line breaks from template
             $template = str_replace('<br />', '', $this->settings->get('template_article_teaser'));;
             // fill template markers with content
@@ -229,21 +273,33 @@ class DevBlog extends Plugin
     /**
      * returns a list of all existing categories
      *
+     * @param string $attribute of article to list
+     *
      * @return string html
      */
-    function listCategories()
+    function listAttribute($attribute)
     {
+        global $CatPage;
+        
         // initialize return content, begin plugin content
         $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content --> ';
         $content .= '<ul>';
 
-        $catlist = array();
+        $list = array();
 
+        // get all values of given attribute once
         foreach ($this->getArticles() as $article) {
-            $catlist[$article['category']] = TRUE;
+            $list[$article[$attribute]] = TRUE;
         }
-        foreach ($catlist as $cat => $value) {
-            $content .= '<li>' . $cat . '</li>';
+        // build list
+        foreach ($list as $key => $value) {
+            $url = $CatPage->get_Href(
+                $this->settings->get('cat'),
+                $this->settings->get('page'),
+                // first letter of attribute = request key
+                substr($attribute, 0, 1) . '=' . $key
+            );
+            $content .= '<li><a href="' . $url . '">' . $key . '</a></li>';
         }
         $content .= '</ul>';
 
@@ -255,14 +311,14 @@ class DevBlog extends Plugin
 
     /**
      * returns all articles meta data
-     *
+     * 
      * @return array with article information
      */
     function getArticles()
     {
         global $CatPage;
 
-        $blog_category = 'Blog';
+        $blog_category = $this->settings->get('cat');
 
         // get blog article pages
         $pagearray = $CatPage->get_PageArray(
@@ -286,7 +342,7 @@ class DevBlog extends Plugin
             $pagedata = explode("\n", $pagecontent);
             // only add meta lines (1-6)
             $meta = array_map(trim, array_slice($pagedata, 1, count($this->_metavalues)));
-            $articles[] = array_combine($this->_metavalues, $meta);
+            $articles[$page] = array_combine($this->_metavalues, $meta);
         }
 
         return $articles;
@@ -412,6 +468,13 @@ class DevBlog extends Plugin
                 {cat_description}
                 <span class="devblog-admin-default">
                     [' . $this->_confdefault['cat'][0] .']
+                </span>
+            </div>
+            <div class="devblog-single-conf">
+                {page_text}
+                {page_description}
+                <span class="devblog-admin-default">
+                    [' . $this->_confdefault['page'][0] .']
                 </span>
             </div>
         </li>

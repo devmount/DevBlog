@@ -6,6 +6,7 @@ admin_initial                  = Blog Initialisierung
 admin_display                  = Anzeige
 admin_templates                = Templates
 config_cat                     = existierende Kategorie in moziloCMS, deren Inhaltsseiten die Blogartikel sind
+config_page                    = Seite der Listenansicht
 config_divider                 = allgemeines Trennzeichen
 config_date_format_teaser      = Datumsformat Teaser (siehe PHP date() function)
 config_date_format_article     = Datumsformat Artikel (siehe PHP date() function)
