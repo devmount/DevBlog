@@ -201,7 +201,7 @@ class DevBlog extends Plugin
      *
      * @return string       html
      */
-    function getArticleHeader($tags)
+    private function getArticleHeader($tags)
     {
         global $CatPage;
 
@@ -249,7 +249,7 @@ class DevBlog extends Plugin
      *
      * @return string            html
      */
-    function listArticles()
+    private function listArticles()
     {
         global $CatPage;
 
@@ -260,6 +260,9 @@ class DevBlog extends Plugin
         // get all articles
         $articles = $this->getArticles();
 
+        // initialize return content, begin plugin content
+        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content -->';
+
         // check category request
         if ($category) {
             foreach ($articles as $key => $article) {
@@ -267,6 +270,8 @@ class DevBlog extends Plugin
                     unset($articles[$key]);
                 }
             }
+            $content .= '<h2>' . $category . '</h2>';
+            $content .= '<p>' . $this->countArticles('category', $category) . ' Artikel</p>';
         }
         // check author request
         if ($author) {
@@ -275,14 +280,13 @@ class DevBlog extends Plugin
                     unset($articles[$key]);
                 }
             }
+            $content .= '<h2>' . $author . '</h2>';
+            $content .= '<p>' . $this->countArticles('author', $author) . ' Artikel</p>';
         }
         // check number request
         if ($number and count($articles > $number)) {
             $articles = array_slice($articles, 0, $number);
         }
-
-        // initialize return content, begin plugin content
-        $content = '<!-- BEGIN ' . self::PLUGIN_TITLE . ' plugin content -->';
 
         foreach ($articles as $page => $article) {
             $date = $article['date'] . ' ' . $article['time'];
@@ -326,7 +330,7 @@ class DevBlog extends Plugin
      *
      * @return string html
      */
-    function listAttribute($attribute)
+    private function listAttribute($attribute)
     {
         global $CatPage;
 
@@ -363,7 +367,7 @@ class DevBlog extends Plugin
      * 
      * @return array with article information
      */
-    function getArticles()
+    private function getArticles()
     {
         global $CatPage;
 
@@ -397,14 +401,31 @@ class DevBlog extends Plugin
         return $articles;
     }
 
-
+    /**
+     * returns number of articles in given filterkey
+     *
+     * @param  string $key       to identify attribute
+     * @param  string $attribute to count
+     *
+     * @return integer           number of articles
+     */
+    private function countArticles($key, $attribute)
+    {
+        $number = 0;
+        foreach ($this->getArticles() as $article) {
+            if ($article[$key] == $attribute) {
+                $number++;
+            }
+        }
+        return $number;
+    }
 
     /**
      * returns warning of wrong or no mode
      *
      * @return string html output
      */
-    function noMode()
+    private function noMode()
     {
         $content = 'Bitte einen gültigen Modus angeben.';
         return $content;
