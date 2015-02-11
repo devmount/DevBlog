@@ -1,0 +1,57 @@
+.devblog-admin-header {
+    margin: -0.4em -0.8em -5px -0.8em;
+    padding: 10px;
+    background-color: #234567;
+    color: #fff;
+    text-shadow: #000 0 1px 3px;
+}
+.devblog-admin-header span {
+    font-size:20px;
+    vertical-align: top;
+    padding-top: 3px;
+    display: inline-block;
+}
+.devblog-admin-subheader {
+    margin: -0.4em -0.8em 5px -0.8em;
+    padding: 5px 9px;
+    background-color: #ddd;
+    color: #111;
+    text-shadow: #fff 0 1px 2px;
+}
+.devblog-admin-li {
+    background: #eee;
+}
+.devblog-admin-default {
+    color: #aaa;
+    padding-left: 6px;
+}
+.devblog-single-conf {
+    margin-bottom:5px;
+}
+.devblog-single-conf textarea {
+    vertical-align: top;
+}
+.devblog-single-conf input {
+    width: 100px;
+}
+.devblog-col-third {
+    width: 32%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.devblog-bold {
+    font-weight: bold;
+}
+.devblog-code {
+    font-family: monospace;
+    margin: 3px 3px;
+    background-color: #eee;
+    border: 1px dotted #aaa;
+}
+.devblog-italic {
+    font-style: italic;
+}
+.devblog-pre {
+    font-family: monospace;
+}

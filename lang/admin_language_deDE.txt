@@ -1,0 +1,13 @@
+tag1                           = Gibt ... zurück.
+description                    = Generiert ... <br /><br /><span class='plugindraft-bold'>Nutzung:</span><br /><span class='plugindraft-code'>{PARAM1}</span> Fügt ... ein.<br /><br /><span class='plugindraft-pre'>&lt;attribut&gt;: </span>Attributbeschreibung ... <span class='plugindraft-pre'>...</span><br /><br /><span class='plugindraft-bold'>Dokumentation:</span><br />Eine ausführliche Dokumentation ist auf <span class="plugindraft-italic">devmount.de</span> zu finden (siehe obenstehender Link).
+admin_header                   = {PARAM1} Plugin Konfiguration
+on_devmount                    = auf devmount.de
+admin_initial                  = Blog Initialisierung
+admin_display                  = Anzeige
+admin_templates                = Templates
+config_cat                     = existierende Kategorie in moziloCMS, deren Inhaltsseiten die Blogartikel sind
+config_divider                 = allgemeines Trennzeichen
+config_date_format_teaser      = Datumsformat Teaser (siehe PHP date() function)
+config_date_format_article     = Datumsformat Artikel (siehe PHP date() function)
+config_template_article_teaser = Template für die Teaser-Darstellung der Blogeinträge
+config_template_article_header = Template für den Kopfbereich eines Blogeintrags
