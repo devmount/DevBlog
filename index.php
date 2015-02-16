@@ -55,6 +55,7 @@ class DevBlog extends Plugin
         'tag2' => '{DevBlog|list|articles}',
         'tag3' => '{DevBlog|list|categories}',
         'tag4' => '{DevBlog|list|authors}',
+        'tag5' => '{DevBlog|list|years}',
     );
 
     const LOGO_URL = 'http://media.devmount.de/logo_pluginconf.png';
@@ -181,6 +182,9 @@ class DevBlog extends Plugin
             case 'authors':
                 return $this->listAttribute('author');
                 break;
+            case 'years':
+                return $this->listAttribute('date');
+                break;
             default:
                 return $this->noMode();
                 break;
@@ -256,6 +260,7 @@ class DevBlog extends Plugin
         $number = getRequestValue('n');
         $category = getRequestValue('c');
         $author = getRequestValue('a');
+        $year = getRequestValue('d');
 
         // get all articles
         $articles = $this->getArticles();
@@ -282,6 +287,16 @@ class DevBlog extends Plugin
             }
             $content .= '<h2>' . $author . '</h2>';
             $content .= '<p>' . $this->countArticles('author', $author) . ' Artikel</p>';
+        }
+        // check author request
+        if ($year) {
+            foreach ($articles as $key => $article) {
+                if (date_format(date_create($article['date']), 'Y') != $year) {
+                    unset($articles[$key]);
+                }
+            }
+            $content .= '<h2>' . $year . '</h2>';
+            $content .= '<p>' . $this->countArticles('date', $year) . ' Artikel</p>';
         }
         // check number request
         if ($number and count($articles > $number)) {
@@ -342,7 +357,12 @@ class DevBlog extends Plugin
 
         // get all values of given attribute once
         foreach ($this->getArticles() as $article) {
-            $list[$article[$attribute]] = TRUE;
+            if ($attribute == 'date') {
+                $year = date_format(date_create($article[$attribute]) , 'Y');
+                $list[$year] = TRUE;
+            } else {
+                $list[$article[$attribute]] = TRUE;
+            }
         }
         // build list
         foreach ($list as $key => $value) {
@@ -352,7 +372,8 @@ class DevBlog extends Plugin
                 // first letter of attribute = request key
                 substr($attribute, 0, 1) . '=' . $key
             );
-            $content .= '<li><a href="' . $url . '">' . $key . '</a></li>';
+            $count = $this->countArticles($attribute, $key);
+            $content .= '<li><a href="' . $url . '">' . $key . '</a> (' . $count . ')</li>';
         }
         $content .= '</ul>';
 
@@ -413,7 +434,12 @@ class DevBlog extends Plugin
     {
         $number = 0;
         foreach ($this->getArticles() as $article) {
-            if ($article[$key] == $attribute) {
+            if ($key == 'date') {
+                $value = date_format(date_create($article[$key]), 'Y');
+            } else {
+                $value = $article[$key];
+            }
+            if ($value == $attribute) {
                 $number++;
             }
         }
