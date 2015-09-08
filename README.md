@@ -1,8 +1,9 @@
 DevBlog
 ===========
 
-A Plugin for moziloCMS 2.0
+A smal blog plugin for moziloCMS 2.0
 
+<!--
 This plugin draft can be used for easier moziloCMS plugin development.
 
 ## Installation
@@ -28,3 +29,4 @@ This Plugin is distributed under *GNU General Public License, Version 3* (see LI
 ## Documentation
 A detailed documentation and demo can be found on DEVMOUNT's website:
 http://devmount.de/Develop/moziloCMS/Plugins/DevBlog.html
+-->

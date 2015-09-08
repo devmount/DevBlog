@@ -3,7 +3,7 @@
 /**
  * moziloCMS Plugin: DevBlog
  *
- * Does something awesome!
+ * A small blog plugin vor Mozilo
  *
  * PHP version 5
  *
@@ -12,7 +12,7 @@
  * @author   DEVMOUNT <mail@devmount.de>
  * @license  GPL v3+
  * @version  GIT: v0.x.jjjj-mm-dd
- * @link     https://github.com/devmount/DevBlog
+ * @link     https://github.com/devmount-mozilo/DevBlog
  * @link     http://devmount.de/Develop/moziloCMS/Plugins/DevBlog.html
  * @see      Verse
  *           – The Bible
@@ -34,7 +34,7 @@ if (!defined('IS_CMS')) {
  * @package  PHP_MoziloPlugins
  * @author   DEVMOUNT <mail@devmount.de>
  * @license  GPL v3+
- * @link     https://github.com/devmount/DevBlog
+ * @link     https://github.com/devmount-mozilo/DevBlog
  */
 class DevBlog extends Plugin
 {
